@@ -1,0 +1,30 @@
+{
+  "name": "GMI Móvil - Generador Múltiple de Informes",
+  "short_name": "GMI Móvil",
+  "description": "Generación local de informes institucionales en PDF.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#153b63",
+  "icons": [
+    {
+      "src": "./icons/gmi-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/gmi-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/gmi-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

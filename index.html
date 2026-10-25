@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GMI - Generador Múltiple de Informes</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/gmi-192.png">
+  <meta name="theme-color" content="#153b63">
+  <meta name="description" content="GMI Móvil: generación local de informes institucionales en PDF.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+<main class="app">
+  <header class="header">
+    <div class="brand">
+      <img class="institutional-banner" src="./encabezado-institucional.png" alt="Encabezado institucional de la Institución Educativa Narciso José Matus Torres">
+      <h1>GMI · GENERADOR MÚLTIPLE DE INFORMES</h1>
+      <p>Generación de documentos e informes en PDF.</p>
+    </div>
+  </header>
+
+  <div class="message" style="background:#fff7e6;border:1px solid #f0d69a;border-radius:8px;padding:12px;color:#765b17">GMI MÓVIL v0.1.15 · Versión de pruebas. Genera informes PDF y permite incorporar anexos localmente. La equivalencia completa con escritorio y las pruebas de seguridad/dispositivos móviles siguen pendientes; no usar aún con datos reales de estudiantes.</div>
+  <form id="form">
+    <section>
+      <h2>1. Identificación del informe</h2>
+      <div class="grid two">
+        <label>Tipo de informe *
+          <select id="tipoInforme" required>
+            <option value="">Seleccione...</option>
+            <option>Eventos / Celebraciones / Conmemoraciones</option>
+            <option>Reporte Bajo Rendimiento Académico y Seguimiento</option>
+            <option>Informe/Remisión Aula de Apoyo</option>
+            <option>Informe/Remisión a Orientación</option>
+            <option>Informe/Remisión a Coordinación</option>
+            <option>Novedades de Convivencia</option>
+            <option>Informe/Remisión a Rectoría</option>
+          </select>
+        </label>
+        <label>Fecha del informe *<input id="fechaInforme" type="date" required></label>
+        <label>Nombre de quien elabora *<input id="autor" required placeholder="Nombres y apellidos"></label>
+        <label>Tipo de personal *
+          <select id="tipoPersonal" required>
+            <option value="">Seleccione...</option>
+            <option value="DIRECTIVO DOCENTE">Directivo Docente</option>
+            <option value="DOCENTE">Docente</option>
+          </select>
+        </label>
+        <label>Cargo de quien elabora *
+          <select id="cargoAutor" required disabled>
+            <option value="">Seleccione primero el tipo de personal...</option>
+          </select>
+        </label>
+        <label>Sede *
+          <select id="sede" required>
+            <option value="">Seleccione...</option><option>ADMINISTRATIVA</option><option>JORDÁN</option>
+            <option>MANANTIAL</option><option>NUEVA COLOMBIA</option><option>SAN ANTONIO DE PADUA</option><option>TOPACIO</option>
+          </select>
+        </label>
+        <label>Jornada
+          <select id="jornada">
+            <option value="">Seleccione...</option>
+            <option>Mañana</option><option>Tarde</option><option>Noche</option>
+            <option>Única</option><option>Completa</option><option>Sabatina</option><option>Mixta</option>
+          </select>
+        </label>
+        <label>Dirigido a <input id="destinatario" placeholder="Cargo o destinatario, si aplica"></label>
+        <label>Periodo de los hechos: fecha de inicio <input id="periodoInicio" type="date"></label>
+        <label>Periodo de los hechos: fecha de fin <input id="periodoFin" type="date"></label>
+        <label class="span-two">Asunto *<input id="asunto" required placeholder="Describa brevemente el asunto del informe"></label>
+      </div>
+    </section>
+
+    <section id="generalContentSection" class="hidden">
+      <h2>2. Desarrollo del informe</h2>
+      <p class="hint">Diligencie los apartados pertinentes. Los campos vacíos no aparecerán en el PDF. Describa los hechos con precisión y diferencie lo constatado directamente de la información recibida.</p>
+      <label>Objeto del informe<textarea id="objeto" rows="3" placeholder="Finalidad y alcance del informe"></textarea></label>
+      <label>Antecedentes y contexto<textarea id="antecedentes" rows="4" placeholder="Antecedentes relevantes y contexto conocido"></textarea></label>
+      <label>Hechos e información recibida o constatada<textarea id="hechos" rows="5" placeholder="Relate los hechos de manera objetiva y cronológica"></textarea></label>
+      <label>Actuaciones realizadas<textarea id="actuaciones" rows="4" placeholder="Acciones que efectivamente se realizaron"></textarea></label>
+      <label>Documentos y elementos revisados<textarea id="documentos" rows="3" placeholder="Actas, registros, comunicaciones u otros soportes revisados"></textarea></label>
+      <label>Valoración y análisis<textarea id="analisis" rows="4" placeholder="Valoración sustentada, sin presentar sospechas como hechos probados"></textarea></label>
+      <label>Conclusiones<textarea id="conclusiones" rows="3" placeholder="Conclusiones derivadas de los hechos y soportes disponibles"></textarea></label>
+      <label>Solicitudes o recomendaciones<textarea id="solicitudes" rows="3" placeholder="Actuaciones solicitadas o recomendaciones pertinentes"></textarea></label>
+    </section>
+
+    <section id="academicContentSection" class="hidden">
+      <h2>2. Reporte de bajo rendimiento académico y seguimiento</h2>
+      <p class="hint">Registre información académica verificable, las estrategias pedagógicas realmente implementadas y la evolución observada. Los campos vacíos no aparecerán en el PDF.</p>
+      <h3>Identificación del estudiante</h3>
+      <div class="grid two">
+        <label>Nombre completo del estudiante<input id="estudianteNombre" placeholder="Nombres y apellidos del estudiante"></label>
+        <label>Grado<input id="estudianteGrado" placeholder="Ej. 7.º"></label>
+        <label>Grupo<input id="estudianteGrupo" placeholder="Ej. 702"></label>
+        <label>Periodo académico
+          <select id="estudiantePeriodo">
+            <option value="">Seleccione...</option>
+            <option>Primer periodo</option><option>Segundo periodo</option>
+            <option>Tercer periodo</option><option>Cuarto periodo</option>
+            <option>Anual</option><option>Otro / por definir</option>
+          </select>
+        </label>
+      </div>
+      <label>Área(s) o asignatura(s) reportadas<textarea id="academicoAreas" rows="2" placeholder="Indique las áreas o asignaturas y, si se conoce, el resultado académico correspondiente"></textarea></label>
+      <label>Situación académica identificada<textarea id="academicoSituacion" rows="4" placeholder="Describa los resultados y evidencias disponibles del desempeño académico"></textarea></label>
+      <label>Dificultades observadas<textarea id="academicoDificultades" rows="3" placeholder="Aprendizajes pendientes, actividades no desarrolladas u otras dificultades pertinentes; distinga observaciones de información recibida"></textarea></label>
+      <label>Estrategias pedagógicas implementadas<textarea id="academicoEstrategias" rows="4" placeholder="Refuerzos, retroalimentación, nivelaciones u otras acciones efectivamente realizadas; incluya fechas cuando se conozcan"></textarea></label>
+      <label>Comunicación y acompañamiento familiar<textarea id="academicoFamilia" rows="3" placeholder="Citaciones, reuniones o comunicaciones realizadas, fecha, medio y resultado, si existe registro"></textarea></label>
+      <label>Seguimiento y evolución<textarea id="academicoSeguimiento" rows="4" placeholder="Avances evidenciados, dificultades persistentes y actividades pendientes. Si aún no hay resultados, indique que el seguimiento continúa"></textarea></label>
+      <label>Estado del seguimiento
+        <select id="academicoEstado">
+          <option value="">Seleccione...</option><option>Inicial</option><option>En proceso</option><option>Con avances evidenciados</option><option>Requiere continuidad</option>
+        </select>
+      </label>
+      <label>Compromisos y plan de mejoramiento<textarea id="academicoCompromisos" rows="4" placeholder="Acción acordada, responsable y fecha prevista de cumplimiento o revisión"></textarea></label>
+      <label>Remisiones y recomendaciones <span class="optional">(opcional)</span><textarea id="academicoRemision" rows="3" placeholder="Recomendaciones o remisiones pertinentes según las necesidades identificadas"></textarea></label>
+      <label>Evidencias académicas revisadas <span class="optional">(opcional)</span><textarea id="academicoEvidencias" rows="3" placeholder="Registros de evaluación, actividades de recuperación, comunicaciones, actas u otros soportes disponibles"></textarea></label>
+    </section>
+
+    <section id="supportContentSection" class="hidden">
+      <h2>2. Informe de remisión y seguimiento al Aula de Apoyo</h2>
+      <p class="hint">Registre observaciones pedagógicas verificables. No incluya diagnósticos clínicos ni afirmaciones que no estén sustentadas.</p>
+      <label>Tipo de actuación
+        <select id="apoyoTipoActuacion"><option value="">Seleccione...</option><option>Primera remisión</option><option>Seguimiento</option><option>Solicitud de orientación pedagógica</option><option>Revisión de apoyos</option><option>Actualización de información</option></select>
+      </label>
+      <h3>Identificación del estudiante</h3>
+      <div class="grid two">
+        <label>Nombre completo del estudiante<input id="apoyoEstudiante" placeholder="Nombres y apellidos"></label>
+        <label>Grado<input id="apoyoGrado" placeholder="Grado"></label>
+        <label>Grupo<input id="apoyoGrupo" placeholder="Grupo"></label>
+        <label>Edad (si es pertinente)<input id="apoyoEdad" type="number" min="1" max="100" placeholder="Edad"></label>
+      </div>
+      <label>Motivo del informe o remisión<textarea id="apoyoMotivo" rows="3" placeholder="Indique qué se solicita y por qué"></textarea></label>
+      <label>Situaciones observadas en el contexto escolar<textarea id="apoyoObservaciones" rows="4" placeholder="Describa situaciones concretas de aprendizaje, comunicación, participación o interacción; indique contexto o fechas si se conocen"></textarea></label>
+      <label>Desempeño pedagógico, fortalezas e intereses<textarea id="apoyoDesempeno" rows="4" placeholder="Aprendizajes alcanzados, fortalezas, intereses y actividades que realiza con autonomía"></textarea></label>
+      <label>Estrategias implementadas y resultados observados<textarea id="apoyoEstrategias" rows="4" placeholder="Estrategias efectivamente aplicadas, cuándo se realizaron y resultados observados"></textarea></label>
+      <label>Comunicación con la familia<textarea id="apoyoFamilia" rows="3" placeholder="Reuniones o comunicaciones realizadas, fechas, orientaciones y acuerdos, si existen"></textarea></label>
+      <label>Apoyo solicitado al Aula de Apoyo<textarea id="apoyoSolicitud" rows="4" placeholder="Orientación pedagógica, observación en contexto escolar, recomendaciones u otro apoyo solicitado"></textarea></label>
+      <label>Seguimiento y acuerdos<textarea id="apoyoSeguimiento" rows="3" placeholder="Acciones propuestas, responsables y fechas de seguimiento, si se han definido"></textarea></label>
+      <label>Documentos y evidencias disponibles <span class="optional">(opcional)</span><textarea id="apoyoEvidencias" rows="3" placeholder="Registros pedagógicos, muestras de trabajo, informes académicos u otros soportes pertinentes"></textarea></label>
+    </section>
+
+    <section id="orientationContentSection" class="hidden">
+      <h2>2. Informe de remisión y seguimiento a Orientación Escolar</h2>
+      <p class="hint">Describa hechos y manifestaciones de forma objetiva. No formule diagnósticos clínicos ni incluya información sensible innecesaria. Si existe riesgo inmediato, active la ruta institucional correspondiente sin esperar este informe.</p>
+      <h3>Identificación de la persona remitida</h3>
+      <div class="grid two">
+        <label>Tipo de persona
+          <select id="orientTipoPersona"><option value="">Seleccione...</option><option>Estudiante</option><option>Acudiente o familiar</option><option>Docente</option><option>Otro integrante de la comunidad educativa</option></select>
+        </label>
+        <label>Nombre completo<input id="orientNombre" placeholder="Nombres y apellidos"></label>
+        <label>Grado<input id="orientGrado" placeholder="Si corresponde"></label>
+        <label>Grupo<input id="orientGrupo" placeholder="Si corresponde"></label>
+      </div>
+      <h3>Motivo y prioridad de la remisión</h3>
+      <div class="grid two">
+        <label>Tipo de actuación
+          <select id="orientTipoActuacion"><option value="">Seleccione...</option><option>Primera remisión</option><option>Seguimiento</option><option>Solicitud de orientación</option><option>Acompañamiento a la familia</option><option>Continuidad de atención</option></select>
+        </label>
+        <label>Prioridad de atención
+          <select id="orientPrioridad"><option value="">Seleccione...</option><option>Ordinaria</option><option>Prioritaria</option><option>Riesgo inmediato</option></select>
+        </label>
+        <label>Fecha y hora de los hechos<input id="orientFechaHora" placeholder="Si se conoce"></label>
+        <label>Lugar o contexto<input id="orientLugar" placeholder="Sede, aula u otro contexto"></label>
+        <label>Fuente de información
+          <select id="orientFuente"><option value="">Seleccione...</option><option>Observación directa</option><option>Manifestación de la persona remitida</option><option>Información de terceros</option><option>Registro institucional</option><option>Varias fuentes</option></select>
+        </label>
+      </div>
+      <label>Motivo de la remisión<textarea id="orientMotivo" rows="3" placeholder="Explique qué apoyo requiere y por qué se remite"></textarea></label>
+      <label>Descripción objetiva y cronológica de los hechos<textarea id="orientHechos" rows="5" placeholder="Describa hechos concretos, fechas, contexto y frecuencia cuando se conozcan"></textarea></label>
+      <label>Manifestaciones relevantes <span class="optional">(opcional)</span><textarea id="orientManifestaciones" rows="3" placeholder="Indique quién manifestó qué, evitando interpretaciones"></textarea></label>
+      <label>Actuaciones previas realizadas <span class="optional">(opcional)</span><textarea id="orientActuaciones" rows="3" placeholder="Diálogos, reuniones, medidas pedagógicas o comunicaciones y sus resultados"></textarea></label>
+      <label>Comunicación con la familia <span class="optional">(opcional)</span><textarea id="orientFamilia" rows="2" placeholder="Fecha, medio, persona contactada y resultado, si aplica"></textarea></label>
+      <label>Apoyo específico solicitado a Orientación Escolar<textarea id="orientSolicitud" rows="3" placeholder="Acompañamiento, orientación a la familia, recomendaciones o seguimiento requerido"></textarea></label>
+      <label>Medidas inmediatas adoptadas <span class="optional">(opcional)</span><textarea id="orientMedidas" rows="3" placeholder="Registre únicamente medidas efectivamente adoptadas"></textarea></label>
+      <label>Acuerdos, recomendaciones y seguimiento <span class="optional">(opcional)</span><textarea id="orientSeguimiento" rows="3" placeholder="Responsables, fechas y acciones propuestas o acordadas"></textarea></label>
+      <label>Documentos y evidencias pertinentes <span class="optional">(opcional)</span><textarea id="orientEvidencias" rows="2" placeholder="Registros o documentos anexos, protegiendo datos personales"></textarea></label>
+    </section>
+
+    <section id="coordinationContentSection" class="hidden">
+      <h2>2. Informe/remisión a Coordinación</h2>
+      <p class="hint">Registre hechos verificables, diferencie observaciones directas de información recibida y describa únicamente las actuaciones que efectivamente se realizaron. La remisión no constituye por sí misma una decisión disciplinaria.</p>
+      <h3>Clasificación de la situación</h3>
+      <div class="grid two">
+        <label>Tipo de situación
+          <select id="coordTipoSituacion">
+            <option value="">Seleccione...</option><option>Académica</option><option>Convivencia escolar</option><option>Incumplimiento de acuerdos o compromisos</option><option>Situación relacionada con acudiente o familia</option><option>Novedad administrativa u operativa</option><option>Otra situación</option>
+          </select>
+        </label>
+        <label>Finalidad del informe
+          <select id="coordFinalidad">
+            <option value="">Seleccione...</option><option>Poner una situación en conocimiento</option><option>Remisión para intervención de Coordinación</option><option>Solicitar seguimiento</option><option>Solicitar orientación o directrices</option><option>Dejar constancia de actuaciones realizadas</option>
+          </select>
+        </label>
+        <label>Prioridad de atención
+          <select id="coordPrioridad"><option value="">Seleccione...</option><option>Ordinaria</option><option>Prioritaria</option><option>Inmediata</option></select>
+        </label>
+        <label>Tipo de persona involucrada
+          <select id="coordTipoPersona"><option value="">Seleccione...</option><option>Estudiante</option><option>Acudiente o familiar</option><option>Docente</option><option>Directivo docente</option><option>Otro integrante de la comunidad educativa</option><option>Varias personas</option></select>
+        </label>
+      </div>
+      <h3>Identificación de la persona involucrada</h3>
+      <div class="grid two">
+        <label>Nombre completo<input id="coordPersonaNombre" placeholder="Nombres y apellidos"></label>
+        <label>Grado<input id="coordGrado" placeholder="Si corresponde"></label>
+        <label>Grupo<input id="coordGrupo" placeholder="Si corresponde"></label>
+        <label>Fecha y hora de los hechos<input id="coordFechaHora" placeholder="Fecha y hora, si se conocen"></label>
+        <label>Lugar de los hechos<input id="coordLugar" placeholder="Sede, aula u otro lugar"></label>
+        <label>Fuente de información
+          <select id="coordFuente"><option value="">Seleccione...</option><option>Observación directa de quien reporta</option><option>Manifestación de la persona involucrada</option><option>Información suministrada por terceros</option><option>Registro o documento institucional</option><option>Varias fuentes</option></select>
+        </label>
+      </div>
+      <label>Descripción objetiva y cronológica de los hechos<textarea id="coordHechos" rows="5" placeholder="Describa qué ocurrió, cuándo, dónde, quiénes intervinieron y qué se constató. Distinga hechos observados de información recibida."></textarea></label>
+      <label>Antecedentes o frecuencia conocida <span class="optional">(opcional)</span><textarea id="coordAntecedentes" rows="3" placeholder="Antecedentes relevantes sustentados en registros o conocimiento directo; indique si no se cuenta con información previa."></textarea></label>
+      <label>Impacto observado en la actividad académica, la convivencia o el servicio educativo <span class="optional">(opcional)</span><textarea id="coordImpacto" rows="3" placeholder="Describa efectos concretos observados, sin especulaciones."></textarea></label>
+      <h3>Actuaciones previas y solicitud</h3>
+      <label>Actuaciones realizadas por quien reporta<textarea id="coordActuaciones" rows="4" placeholder="Diálogos, medidas pedagógicas, citaciones, comunicaciones o acciones efectivamente realizadas; incluya fechas y resultados si se conocen."></textarea></label>
+      <label>Comunicación con el acudiente o la familia <span class="optional">(opcional)</span><textarea id="coordFamilia" rows="3" placeholder="Indique si hubo comunicación, fecha, medio, resultado o si está pendiente. No registre como realizada una comunicación que no ocurrió."></textarea></label>
+      <label>Documentos y evidencias disponibles <span class="optional">(opcional)</span><textarea id="coordEvidencias" rows="3" placeholder="Actas, registros, citaciones, observador, soportes académicos u otros documentos pertinentes."></textarea></label>
+      <label>Intervención, orientación o decisión solicitada a Coordinación<textarea id="coordSolicitud" rows="4" placeholder="Precise qué requiere: conocimiento, intervención, verificación, orientación, seguimiento u otra actuación dentro de las competencias de Coordinación."></textarea></label>
+      <label>Medidas inmediatas adoptadas <span class="optional">(opcional)</span><textarea id="coordMedidas" rows="3" placeholder="Indique medidas efectivamente adoptadas. Si existe riesgo inmediato, active sin demora la ruta institucional aplicable; el informe no sustituye esa actuación."></textarea></label>
+      <label>Compromisos pendientes y fechas relevantes <span class="optional">(opcional)</span><textarea id="coordCompromisos" rows="3" placeholder="Acciones pendientes, responsables y fechas, solo cuando estén definidos. No registre acuerdos no aceptados."></textarea></label>
+    </section>
+
+
+    <section id="convivenciaContentSection" class="hidden">
+      <h2>2. Informe de novedades de convivencia</h2>
+      <p class="hint">Registre hechos concretos y diferencie observaciones directas de información recibida. Esta plantilla documenta la novedad y no determina por sí sola una clasificación ni responsabilidad. Si hay riesgo inmediato, active sin demora la ruta institucional correspondiente.</p>
+      <h3>Identificación de las personas involucradas</h3>
+      <div class="grid two">
+        <label>Tipo de persona involucrada
+          <select id="convTipoPersona"><option value="">Seleccione...</option><option>Estudiante</option><option>Acudiente o familiar</option><option>Docente</option><option>Directivo docente</option><option>Otro integrante de la comunidad educativa</option><option>Varias personas</option></select>
+        </label>
+        <label>Nombre(s) de la(s) persona(s) involucrada(s)<input id="convPersonas" placeholder="Nombres, si se conocen"></label>
+        <label>Grado<input id="convGrado" placeholder="Si corresponde"></label>
+        <label>Grupo<input id="convGrupo" placeholder="Si corresponde"></label>
+        <label>Fecha y hora de los hechos<input id="convFechaHora" placeholder="Fecha y hora, si se conocen"></label>
+        <label>Lugar de los hechos<input id="convLugar" placeholder="Sede, aula, patio u otro lugar"></label>
+      </div>
+      <h3>Clasificación descriptiva de la novedad</h3>
+      <div class="grid two">
+        <label>Tipo de situación
+          <select id="convTipoSituacion"><option value="">Seleccione...</option><option>Agresión verbal</option><option>Agresión física</option><option>Conflicto entre estudiantes</option><option>Presunta intimidación o acoso</option><option>Daño a bienes</option><option>Incumplimiento de acuerdos de convivencia</option><option>Situación relacionada con redes sociales</option><option>Alteración de la dinámica escolar</option><option>Otra situación</option></select>
+        </label>
+        <label>Frecuencia o antecedente conocido
+          <select id="convFrecuencia"><option value="">Seleccione...</option><option>Hecho aislado según la información disponible</option><option>Reiteración reportada</option><option>Existen antecedentes documentados</option><option>No se cuenta con información suficiente</option></select>
+        </label>
+        <label>Fuente de información
+          <select id="convFuente"><option value="">Seleccione...</option><option>Observación directa de quien reporta</option><option>Manifestación de persona involucrada</option><option>Información de terceros</option><option>Registro institucional</option><option>Varias fuentes</option></select>
+        </label>
+        <label>Personas presentes o testigos <span class="optional">(opcional)</span><input id="convTestigos" placeholder="Nombres si se conocen y resulta pertinente"></label>
+      </div>
+      <label>Descripción objetiva y cronológica de los hechos<textarea id="convHechos" rows="5" placeholder="Qué ocurrió, cuándo, dónde y cómo se conoció la situación. Distinga lo observado de lo referido por otras personas."></textarea></label>
+      <label>Manifestaciones relevantes de las personas involucradas <span class="optional">(opcional)</span><textarea id="convManifestaciones" rows="3" placeholder="Indique quién expresó qué, sin añadir interpretaciones ni conclusiones no verificadas"></textarea></label>
+      <label>Consecuencias o afectaciones observadas <span class="optional">(opcional)</span><textarea id="convAfectacion" rows="3" placeholder="Describa efectos concretos observados sobre las personas, la convivencia o la actividad escolar"></textarea></label>
+      <h3>Actuaciones inmediatas y comunicaciones</h3>
+      <label>Medidas inmediatas adoptadas<textarea id="convMedidas" rows="4" placeholder="Registre solo las acciones efectivamente realizadas para atender la situación y proteger a las personas involucradas"></textarea></label>
+      <label>Comunicación con Coordinación, Orientación, Rectoría u otras instancias <span class="optional">(opcional)</span><textarea id="convComunicaciones" rows="3" placeholder="A quién se informó, fecha, medio y respuesta, si se conoce"></textarea></label>
+      <label>Comunicación con acudientes o familia <span class="optional">(opcional)</span><textarea id="convFamilia" rows="3" placeholder="Indique fecha, medio, persona contactada y resultado; si está pendiente, señálelo"></textarea></label>
+      <label>Activación de protocolos o rutas <span class="optional">(opcional)</span><textarea id="convRuta" rows="3" placeholder="Registre la ruta activada y las actuaciones realizadas, si corresponde. No espere a completar este informe ante riesgo inmediato"></textarea></label>
+      <h3>Antecedentes y seguimiento</h3>
+      <label>Antecedentes o compromisos previos pertinentes <span class="optional">(opcional)</span><textarea id="convAntecedentes" rows="3" placeholder="Registros previos pertinentes y verificables; evite referencias no sustentadas"></textarea></label>
+      <label>Estrategias pedagógicas o acciones de seguimiento realizadas <span class="optional">(opcional)</span><textarea id="convSeguimiento" rows="3" placeholder="Acciones realizadas, resultados observados y asuntos pendientes"></textarea></label>
+      <label>Actuación o seguimiento requerido <textarea id="convSolicitud" rows="3" placeholder="Poner en conocimiento, solicitar seguimiento, intervención o valoración institucional, según corresponda"></textarea></label>
+      <label>Evidencias y anexos pertinentes <span class="optional">(opcional)</span><textarea id="convEvidencias" rows="3" placeholder="Actas, comunicaciones, registros o soportes disponibles; proteja datos personales y evite anexos innecesarios"></textarea></label>
+    </section>
+
+    <section id="rectoriaContentSection" class="hidden">
+      <h2>2. Informe/remisión a Rectoría</h2>
+      <p class="hint">Exponga la situación de forma objetiva y señale la actuación concreta que solicita a Rectoría. No anticipe decisiones que corresponden a esa instancia ni presente información no verificada como hecho probado.</p>
+      <div class="grid two">
+        <label>Tipo de asunto
+          <select id="rectTipoAsunto"><option value="">Seleccione...</option><option>Académico o pedagógico</option><option>Convivencia escolar</option><option>Administrativo u operativo</option><option>Gestión del personal</option><option>Infraestructura, recursos o dotación</option><option>Solicitud de autorización o decisión</option><option>Situación que requiere intervención de Rectoría</option><option>Otro asunto institucional</option></select>
+        </label>
+        <label>Finalidad de la remisión
+          <select id="rectFinalidad"><option value="">Seleccione...</option><option>Poner en conocimiento</option><option>Solicitar orientación o directrices</option><option>Solicitar autorización</option><option>Solicitar decisión</option><option>Solicitar gestión administrativa</option><option>Presentar antecedentes y actuaciones realizadas</option><option>Solicitar seguimiento institucional</option></select>
+        </label>
+      </div>
+      <label>Personas o dependencias involucradas <span class="optional">(opcional)</span><textarea id="rectInvolucrados" rows="3" placeholder="Nombres, cargos, sedes o dependencias pertinentes"></textarea></label>
+      <label>Antecedentes y contexto<textarea id="rectAntecedentes" rows="4" placeholder="Antecedentes relevantes para comprender la situación"></textarea></label>
+      <label>Descripción objetiva y cronológica de los hechos<textarea id="rectHechos" rows="5" placeholder="Indique fechas, lugares, circunstancias y fuente de la información; diferencie lo observado de lo reportado"></textarea></label>
+      <label>Consecuencias o afectaciones institucionales <span class="optional">(opcional)</span><textarea id="rectAfectacion" rows="3" placeholder="Efectos concretos conocidos sobre el servicio educativo, la gestión o las personas"></textarea></label>
+      <label>Actuaciones previas y comunicaciones<textarea id="rectActuaciones" rows="4" placeholder="Gestiones realizadas, comunicaciones, reuniones, respuestas y resultados; indique fechas cuando se conozcan"></textarea></label>
+      <label>Fundamentos y documentos revisados <span class="optional">(opcional)</span><textarea id="rectFundamentos" rows="3" placeholder="Actos administrativos, directrices, procedimientos o documentos efectivamente consultados. Cite normas solo si se han verificado"></textarea></label>
+      <label>Conclusiones o asuntos pendientes <span class="optional">(opcional)</span><textarea id="rectConclusiones" rows="3" placeholder="Conclusiones sustentadas y aspectos que aún requieren gestión"></textarea></label>
+      <label class="required-field">Solicitud concreta a Rectoría<textarea id="rectSolicitud" rows="4" placeholder="Precise qué orientación, autorización, decisión o gestión solicita y por qué se requiere intervención de Rectoría"></textarea></label>
+      <label>Plazo o fecha relevante <span class="optional">(opcional)</span><textarea id="rectPlazo" rows="2" placeholder="Indique fecha y motivo objetivo de urgencia, si aplica"></textarea></label>
+      <label>Relación de anexos y evidencias <span class="optional">(opcional)</span><textarea id="rectEvidencias" rows="3" placeholder="Enumere actas, comunicaciones, informes u otros soportes adjuntos; proteja datos personales"></textarea></label>
+    </section>
+
+    <section id="eventContentSection" class="hidden">
+      <h2>2. Informe de evento, celebración o conmemoración</h2>
+      <p class="hint">Diligencie la información que corresponda a la actividad realizada. Los campos vacíos no aparecerán en el PDF. Use el asunto como nombre de la actividad y describa únicamente hechos y resultados que pueda sustentar.</p>
+      <label>Objetivo de la actividad<textarea id="eventoObjetivo" rows="3" placeholder="Propósito pedagógico, cultural, cívico, recreativo o institucional"></textarea></label>
+      <label>Descripción y desarrollo de la actividad<textarea id="eventoDesarrollo" rows="5" placeholder="Describa las actividades realizadas y su secuencia, en orden claro y concreto"></textarea></label>
+      <label>Participantes y responsables<textarea id="eventoParticipantes" rows="3" placeholder="Grados, grupos, docentes responsables, familias, invitados o aliados, si corresponde"></textarea></label>
+      <label>Resultados y aspectos destacados<textarea id="eventoResultados" rows="4" placeholder="Logros, aprendizajes, participación y cumplimiento del objetivo, según lo observado"></textarea></label>
+      <label>Novedades o dificultades <span class="optional">(opcional)</span><textarea id="eventoNovedades" rows="3" placeholder="Situaciones que afectaron el desarrollo o ajustes realizados, si los hubo"></textarea></label>
+      <label>Conclusiones y recomendaciones <span class="optional">(opcional)</span><textarea id="eventoRecomendaciones" rows="3" placeholder="Valoración final y aspectos por mantener o mejorar en futuras actividades"></textarea></label>
+    </section>
+
+    <section>
+      <h2>3. Responsable y firma</h2>
+      <div class="grid two">
+        <label>Nombre para la firma<input id="firmaNombre" placeholder="Si se deja vacío, se usará el nombre del autor"></label>
+        <label>Cargo para la firma<input id="firmaCargo" placeholder="Si se deja vacío, se usará el cargo del autor"></label>
+      </div>
+      <p class="hint">El generador no certifica la veracidad de los datos: quien elabora debe revisar el contenido antes de generar el PDF.</p>
+    </section>
+
+
+
+
+    <dialog id="oficioModeDialog" class="choice-dialog">
+      <div id="oficioModeForm">
+        <h2>¿Cómo desea generar el oficio remisorio?</h2>
+        <label class="choice-option"><input type="radio" name="oficioMode" value="standalone" checked> <span><strong>Generar solo el oficio</strong><small>Guardar un PDF independiente ahora.</small></span></label>
+        <label class="choice-option"><input type="radio" name="oficioMode" value="memory"> <span><strong>Incluirlo en el PDF completo</strong><small>Conservarlo temporalmente en memoria y esperar a generar el informe completo. No se descarga un oficio separado.</small></span></label>
+        <div class="actions">
+          <button type="button" id="cancelOficioMode" class="secondary">CANCELAR</button>
+          <button type="button" id="confirmOficioMode">CONTINUAR</button>
+        </div>
+      </div>
+    </dialog>
+
+    <section id="oficioSection" class="hidden">
+      <h2>4. Oficio remisorio institucional (opcional)</h2>
+      <p class="hint">Complete los campos del oficio. Al generarlo podrá guardarlo por separado o conservarlo en memoria para incorporarlo una sola vez al PDF completo.</p>
+      <div class="grid two">
+        <label>Número o código del oficio <span class="optional">(opcional)</span><input id="oficioNumero" placeholder="Ej. OFICIO No. 012"></label>
+        <label>Fecha del oficio *<input id="oficioFecha" type="date"></label>
+        <label>Tratamiento del destinatario *<input id="oficioTratamiento" value="Señor(a)" placeholder="Ej. Señor(a), Doctora, Licenciado"></label>
+        <label>Nombre del destinatario *<input id="oficioDestinatario" placeholder="Nombres y apellidos"></label>
+        <label>Cargo o dependencia del destinatario *<input id="oficioCargoDestinatario" placeholder="Cargo, entidad o dependencia"></label>
+        <label>Ciudad del destinatario<input id="oficioCiudad" value="Ciudad." placeholder="Ciudad o municipio"></label>
+        <label>Referencia / asunto *<input id="oficioReferencia" placeholder="Asunto breve del oficio"></label>
+        <label>Saludo<input id="oficioSaludo" value="Respetado(a)" placeholder="Ej. Respetado(a) señor(a)"></label>
+        <label>Despedida<input id="oficioDespedida" value="Cordialmente,"></label>
+        <label class="span-two">Cuerpo del oficio *<textarea id="oficioCuerpo" rows="7" placeholder="Redacte el oficio. Separe los párrafos con una línea en blanco."></textarea></label>
+        <label>Nombre de quien firma *<input id="oficioFirmaNombre" placeholder="Nombres y apellidos"></label>
+        <label>Cargo de quien firma *<input id="oficioFirmaCargo" placeholder="Cargo institucional"></label>
+        <label class="span-two">Dependencia o dato adicional de firma <span class="optional">(opcional)</span><input id="oficioFirmaExtra" placeholder="Área, sede o dato adicional, si corresponde"></label>
+      </div>
+      <div class="actions">
+        <button type="button" id="generateOficio">GENERAR OFICIO REMISORIO PDF</button>
+        <button type="button" id="closeOficio" class="secondary">CERRAR CAMPOS DEL OFICIO</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. Evidencias fotográficas</h2>
+      <p class="hint">Puede adjuntar varias imágenes JPG, JPEG o PNG. En el PDF cada fotografía aparecerá a la izquierda y su descripción a la derecha, conservando la proporción original. Cada pareja de imagen y descripción se mantendrá junta al cambiar de página.</p>
+      <div class="photo-actions"><button type="button" id="addPhotos">SELECCIONAR FOTOGRAFÍAS</button><input id="mobilePhotoInput" type="file" accept="image/jpeg,image/png" multiple hidden><span id="photoCount">No hay fotografías seleccionadas.</span></div>
+      <div id="photosList" class="photos-list"></div>
+    </section>
+
+
+
+    <section>
+      <h2>6. Documentos PDF anexos <span class="optional">(opcional)</span></h2>
+      <p class="hint">Adjunte documentos PDF de soporte. Sus páginas se incorporarán al final del informe, después de las evidencias fotográficas, conservando el contenido de cada archivo.</p>
+      <div id="pdfList" class="pdf-list"></div>
+      <div class="photo-actions">
+        <button type="button" id="addPdfs">AGREGAR DOCUMENTOS PDF</button>
+        <input id="mobilePdfInput" type="file" accept="application/pdf,.pdf" multiple hidden>
+        <span id="pdfCount">No hay documentos PDF seleccionados.</span>
+      </div>
+    </section>
+
+
+
+
+
+    <div id="message" class="message" aria-live="polite"></div>
+    <p class="hint final-instructions">Si necesita oficio remisorio, seleccione «Incluirlo en el PDF completo» para mantenerlo temporalmente en memoria. Después pulse «Generar PDF completo»; el oficio aparecerá una sola vez al inicio, seguido del informe, las fotografías y los anexos PDF.</p>
+    <div class="actions">
+      <button type="button" id="openOficio" class="secondary">1. CREAR OFICIO REMISORIO</button>
+      <button type="submit" id="generate">2. GENERAR PDF COMPLETO</button>
+      <button type="button" id="clear" class="secondary">LIMPIAR FORMULARIO</button>
+    </div>
+  </form>
+</main>
+<footer class="app-credit">Desarrollado por Mg. César Ávila</footer>
+<script src="mobile.bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+:root { font-family: "Segoe UI", Arial, sans-serif; color: #17202a; background: #f4f6f9; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.app { max-width: 1120px; margin: 0 auto; padding: 26px; }
+.header { background: #fff; border: 1px solid #dfe4ea; border-radius: 14px; padding: 22px 24px 18px; margin-bottom: 18px; }
+.brand { display: flex; flex-direction: column; align-items: center; gap: 0; width: 100%; }
+.brand > div { flex: 1; text-align: center; }
+.brand .institutional-banner { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; margin: 0 auto 12px; }
+h1 { width: 100%; margin: 0 0 6px; font-size: 28px; line-height: 1.25; color: #153b63; letter-spacing: .2px; text-align: center; font-weight: 800; }
+.header p { margin: 0; color: #697586; text-align: center; }
+section { background: #fff; border: 1px solid #dfe4ea; border-radius: 12px; padding: 21px; margin-bottom: 14px; }
+h2 { margin: 0 0 16px; font-size: 17px; color: #153b63; }
+.grid { display: grid; gap: 14px; margin-bottom: 12px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.span-two { grid-column: 1 / -1; }
+label { display: flex; flex-direction: column; gap: 7px; margin-bottom: 13px; font-size: 13px; font-weight: 600; color: #44505e; }
+.grid label { margin-bottom: 0; }
+input, select, textarea { width: 100%; border: 1px solid #cbd3dc; border-radius: 8px; padding: 11px 12px; font: inherit; font-weight: 400; color: #17202a; background: #fff; }
+textarea { resize: vertical; min-height: 78px; line-height: 1.45; }
+input:focus, select:focus, textarea:focus { outline: 2px solid #a9c7e6; border-color: #4d82b7; }
+.hint { color: #667085; font-size: 13px; line-height: 1.5; margin: -4px 0 15px; }
+.photo-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 12px 0; }
+#photoCount { font-size: 13px; color: #596575; }
+.photos-list { display: grid; gap: 10px; margin-top: 14px; }
+.pdf-list { display: grid; gap: 8px; margin: 12px 0; }
+.pdf-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid #e0e5eb; border-radius: 8px; background: #fbfcfd; }
+.pdf-name { min-width: 0; overflow-wrap: anywhere; color: #344054; font-size: 13px; }
+.photo-item { display: grid; grid-template-columns: 100px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px; border: 1px solid #e0e5eb; border-radius: 10px; }
+.photo-thumb { width: 100px; height: 75px; background: #eef1f5; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.photo-thumb img { width: 100%; height: 100%; object-fit: contain; }
+.photo-name { color: #344054; font-size: 12px; margin-bottom: 8px; overflow-wrap: anywhere; }
+.photo-details label { margin: 0; }
+button { border: 0; border-radius: 8px; padding: 11px 16px; cursor: pointer; font: 700 13px "Segoe UI", Arial, sans-serif; background: #1f5f95; color: #fff; }
+button:hover { filter: brightness(.96); }
+button:disabled { opacity: .55; cursor: wait; }
+button.secondary { background: #e9edf2; color: #263443; }
+.remove-photo { align-self: center; }
+.actions { display: flex; gap: 10px; justify-content: flex-end; margin: 18px 0 30px; }
+.actions #generate { min-width: 230px; }
+.message { min-height: 24px; margin: 12px 0; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.message.ok { color: #167044; }
+.message.error { color: #a32929; }
+@media (max-width: 760px) {
+  .app { padding: 12px; } .header, section { padding: 16px; }
+  .grid.two { grid-template-columns: 1fr; } .span-two { grid-column: auto; }
+  .brand { align-items: center; } .brand .institutional-banner { width: 100%; max-height: none; margin-bottom: 10px; }
+  h1 { font-size: 22px; text-align: center; }
+  .header p { text-align: center; } .photo-item { grid-template-columns: 72px minmax(0, 1fr); }
+  .photo-thumb { width: 72px; height: 60px; } .remove-photo { grid-column: 2; justify-self: start; }
+  .actions { flex-direction: column; } .actions button { width: 100%; } .pdf-item { align-items: flex-start; }
+}
+
+/* Oculta de forma fiable las plantillas que no corresponden al tipo de informe seleccionado. */
+.hidden { display: none !important; }
+
+.final-instructions { margin-top: 20px; }
+.actions { align-items: center; }
+
+.choice-dialog {
+  width: min(620px, calc(100% - 36px));
+  border: 1px solid #d7dee8;
+  border-radius: 16px;
+  padding: 24px;
+  color: #183b61;
+  box-shadow: 0 18px 60px rgba(20, 40, 65, .22);
+}
+.choice-dialog::backdrop { background: rgba(20, 32, 48, .42); }
+.choice-dialog h2 { margin-top: 0; }
+.choice-option {
+  display: flex; align-items: flex-start; gap: 12px;
+  border: 1px solid #d9e1eb; border-radius: 10px;
+  padding: 14px; margin: 12px 0; cursor: pointer;
+}
+.choice-option input { margin-top: 4px; }
+.choice-option span { display: flex; flex-direction: column; gap: 4px; }
+.choice-option small { color: #64748b; line-height: 1.45; }
+
+
+/* Firma discreta de autoría GMI */
+.app-credit { text-align: right; color: #667085; font-size: 11px; letter-spacing: .15px; padding: 2px 4px 14px; margin-top: -4px; }
+@media (max-width: 520px) { .app {padding:8px} .header, section {padding:12px;border-radius:10px} h1 {font-size:19px} h2 {font-size:16px} input,select,textarea {font-size:16px;padding:12px} button {min-height:44px;width:auto} .photo-item {grid-template-columns:64px minmax(0,1fr)} .photo-thumb {width:64px;height:56px} }
