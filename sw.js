@@ -1,4 +1,4 @@
-const CACHE = 'gmi-movil-shell-v0.1.16';
+const CACHE = 'gmi-movil-shell-v0.1.17';
 const CORE_FILES = [
   './',
   './index.html',
