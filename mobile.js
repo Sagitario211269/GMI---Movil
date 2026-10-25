@@ -169,12 +169,31 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
   function downloadBytes(bytes, filename, mime='application/pdf'){
     const blob=new Blob([bytes],{type:mime}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),30000);
   }
-  async function shareOrDownload(bytes, filename){
+  function outputFilename(fallback){
+    const raw=($('outputFilename')?.value||'').trim() || fallback || 'GMI_Informe.pdf';
+    let name=raw.replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/\s+/g,' ').trim().replace(/[. ]+$/,'');
+    if(!name) name='GMI_Informe';
+    if(!/\.pdf$/i.test(name)) name += '.pdf';
+    return name.slice(0,136).replace(/\.pdf$/i,'')+'.pdf';
+  }
+  async function saveOrSharePdf(bytes, filename, saveHandle=null){
+    if(saveHandle){
+      const writable=await saveHandle.createWritable();
+      await writable.write(new Blob([bytes],{type:'application/pdf'}));
+      await writable.close();
+      setMessage(`PDF guardado correctamente: ${filename}`);
+      return;
+    }
     const file=new File([bytes],filename,{type:'application/pdf'});
     if(navigator.canShare && navigator.canShare({files:[file]})){
       try{await navigator.share({files:[file],title:filename});setMessage('Se abrió el menú para compartir el PDF. La recepción depende de la aplicación y del destinatario.');return;}catch(e){if(e.name==='AbortError'){setMessage('Compartir fue cancelado. El PDF también se descargará.');}}
     }
-    downloadBytes(bytes,filename);setMessage('PDF generado y descargado. Compártalo con Coordinación mediante el canal institucional autorizado.');
+    downloadBytes(bytes,filename);setMessage('PDF generado y descargado. Para elegir la carpeta, active la opción de preguntar dónde guardar las descargas en el navegador.');
+  }
+  async function chooseSaveHandle(filename){
+    if(typeof window.showSaveFilePicker!=='function') return null;
+    try{return await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Documento PDF',accept:{'application/pdf':['.pdf']}}]});}
+    catch(e){if(e && e.name==='AbortError') return false;return null;}
   }
   function getVisibleSections(){
     const chosen=$('tipoInforme').value; const sections=[...form.querySelectorAll('section:not(.hidden)')];
@@ -259,8 +278,23 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
     const im=await loadInstitutionalBanner(doc);const sc=Math.min((W-2*M)/im.width,80/im.height);const iw=im.width*sc,ih=im.height*sc;page.drawImage(im,{x:(W-iw)/2,y:H-35-ih,width:iw,height:ih});y=H-45-ih;
     if($('oficioNumero').value.trim())draw($('oficioNumero').value,10,true,8);draw(`Villavicencio, ${$('oficioFecha').value}`,10,false,18);draw($('oficioTratamiento').value||'Señor(a)',10,true,2);draw($('oficioDestinatario').value,10,true,2);draw($('oficioCargoDestinatario').value,10,false,2);if($('oficioCiudad').value.trim())draw($('oficioCiudad').value,10,false,12);draw(`Ref.: ${$('oficioReferencia').value}`,10,true,14);draw($('oficioSaludo').value||'Respetado(a)',10,false,12);for(const para of $('oficioCuerpo').value.split(/\n\s*\n/))draw(para,10,false,8);draw($('oficioDespedida').value||'Cordialmente,',10,false,38);draw($('oficioFirmaNombre').value,10,true,2);draw($('oficioFirmaCargo').value,9,false,2);if($('oficioFirmaExtra').value.trim())draw($('oficioFirmaExtra').value,9,false,2);page.drawLine({start:{x:M,y:35},end:{x:W-M,y:35},thickness:.5,color:rgb(.78,.81,.84)});page.drawText('Desarrollado por Mg. César Ávila',{x:M,y:20,size:7,font,color:rgb(.35,.38,.42)});return await doc.save();
   }
-  $('generateOficio').addEventListener('click',async()=>{try{const bytes=await createOficioPdf();const include=confirm('¿Desea incluir este oficio al comienzo del PDF completo?\n\nAceptar: preparar para incluirlo en el PDF completo.\nCancelar: descargar el oficio como PDF independiente.');if(include){pendingOficioBytes=bytes;setMessage('Oficio preparado en memoria para incluirse una sola vez al comienzo del PDF completo.');}else{await shareOrDownload(bytes,`GMI_Oficio_${safeName($('oficioReferencia').value)}.pdf`);pendingOficioBytes=null;}}catch(e){setMessage(e.message||'No fue posible generar el oficio.','error');}});
-  form.addEventListener('submit',async e=>{e.preventDefault();saveDraft();try{setMessage('Generando PDF…');const bytes=await createPdf({includeOficio:!!pendingOficioBytes});const name=`GMI_${safeName($('tipoInforme').value)}_${$('fechaInforme').value||today()}.pdf`;await shareOrDownload(bytes,name);pendingOficioBytes=null;}catch(err){setMessage(err.message||'No fue posible generar el PDF.','error');}});
+  $('generateOficio').addEventListener('click',async()=>{try{const bytes=await createOficioPdf();const include=confirm('¿Desea incluir este oficio al comienzo del PDF completo?\n\nAceptar: preparar para incluirlo en el PDF completo.\nCancelar: descargar el oficio como PDF independiente.');if(include){pendingOficioBytes=bytes;setMessage('Oficio preparado en memoria para incluirse una sola vez al comienzo del PDF completo.');}else{await saveOrSharePdf(bytes,`GMI_Oficio_${safeName($('oficioReferencia').value)}.pdf`);pendingOficioBytes=null;}}catch(e){setMessage(e.message||'No fue posible generar el oficio.','error');}});
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(!form.reportValidity()) return;
+    saveDraft();
+    const fallback=`GMI_${safeName($('tipoInforme').value)}_${$('fechaInforme').value||today()}.pdf`;
+    const name=outputFilename(fallback);
+    try{
+      // Abrir el selector antes de generar el PDF para conservar la activación del usuario.
+      const handle=await chooseSaveHandle(name);
+      if(handle===false){setMessage('Guardado cancelado. No se generó el PDF.');return;}
+      setMessage('Generando PDF…');
+      const bytes=await createPdf({includeOficio:!!pendingOficioBytes});
+      await saveOrSharePdf(bytes,name,handle);
+      pendingOficioBytes=null;
+    }catch(err){setMessage(err.message||'No fue posible generar o guardar el PDF.','error');}
+  });
   $('clear').addEventListener('click',()=>{if(!confirm('¿Limpiar el formulario y borrar el borrador local de este dispositivo?'))return; form.reset(); pendingOficioBytes=null; localStorage.removeItem(key); openAttachmentDb().then(db=>new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').delete(attachmentDraftKey);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);})).catch(()=>{}); photos.forEach(p=>URL.revokeObjectURL(p.preview)); photos.splice(0);pdfs.splice(0);renderFiles(photos,'photosList','photoCount','photo');renderFiles(pdfs,'pdfList','pdfCount','pdf');$('oficioSection').classList.add('hidden');$('fechaInforme').value=today();$('oficioFecha').value=today();updateCargos();updateTemplate();setMessage('Formulario y borrador local eliminados.');});
   restoreDraft(); updateCargos(); updateTemplate(); renderFiles(photos,'photosList','photoCount','photo');renderFiles(pdfs,'pdfList','pdfCount','pdf');
   (async()=>{try{const restored=await restoreAttachmentDraft();if(restored)setMessage('Anexos recuperados del almacenamiento local.');}catch(e){console.error('No fue posible restaurar los anexos locales.',e);setMessage(`No fue posible recuperar los anexos: ${e.message||'error de almacenamiento'}`,'error');}})();

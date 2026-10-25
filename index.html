@@ -22,7 +22,7 @@
     </div>
   </header>
 
-  <div class="message" style="background:#fff7e6;border:1px solid #f0d69a;border-radius:8px;padding:12px;color:#765b17">GMI MÓVIL v0.1.15 · Versión de pruebas. Genera informes PDF y permite incorporar anexos localmente. La equivalencia completa con escritorio y las pruebas de seguridad/dispositivos móviles siguen pendientes; no usar aún con datos reales de estudiantes.</div>
+  <div class="message" style="background:#fff7e6;border:1px solid #f0d69a;border-radius:8px;padding:12px;color:#765b17">GMI MÓVIL v0.1.16 · Versión de pruebas. Genera informes PDF y permite incorporar anexos localmente. La equivalencia completa con escritorio y las pruebas de seguridad/dispositivos móviles siguen pendientes; no usar aún con datos reales de estudiantes.</div>
   <form id="form">
     <section>
       <h2>1. Identificación del informe</h2>
@@ -374,6 +374,12 @@
 
 
     <div id="message" class="message" aria-live="polite"></div>
+    <div class="save-options">
+      <label for="outputFilename">Nombre del archivo PDF
+        <input id="outputFilename" type="text" value="GMI_Informe.pdf" maxlength="140" autocomplete="off" spellcheck="false">
+      </label>
+      <p class="hint">En navegadores compatibles podrás elegir la carpeta de destino. En los demás se usará la descarga o el menú para compartir.</p>
+    </div>
     <p class="hint final-instructions">Si necesita oficio remisorio, seleccione «Incluirlo en el PDF completo» para mantenerlo temporalmente en memoria. Después pulse «Generar PDF completo»; el oficio aparecerá una sola vez al inicio, seguido del informe, las fotografías y los anexos PDF.</p>
     <div class="actions">
       <button type="button" id="openOficio" class="secondary">1. CREAR OFICIO REMISORIO</button>
